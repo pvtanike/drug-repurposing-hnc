@@ -2,7 +2,7 @@
 ---
 # Multi-Modal Drug Repurposing for Head and Neck Cancer (HNC)
 
-[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Python](https://img.shields.io/badge/Python-3.12+-blue.svg)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![DOI](https://img.shields.io/badge/DOI-Pending-orange.svg)](https://doi.org/)
 
