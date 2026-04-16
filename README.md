@@ -1,6 +1,10 @@
+
+---
 # Multi-Modal Drug Repurposing for Head and Neck Cancer (HNC)
 
-
+[![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-Pending-orange.svg)](https://doi.org/)
 
 > **A comprehensive computational framework integrating electronic health records, genomics, and literature mining for systematic drug repurposing in head and neck cancer, stratified by HPV status.**
 
@@ -10,19 +14,16 @@
 
 - [Overview](#overview)
 - [Key Findings](#key-findings)
-- [Repository Structure](#repository-structure)
-- [Getting Started](#getting-started)
+- [Data Requirements & Acquisition](#data-requirements--acquisition)
 - [Methodology](#methodology)
   - [Aim 1: EHR-Based Drug Repurposing](#aim-1-ehr-based-drug-repurposing)
   - [Aim 2: Genomics-Based Drug Repurposing](#aim-2-genomics-based-drug-repurposing)
   - [Aim 3: Literature-Based Validation](#aim-3-literature-based-validation)
-  - [Aim 4: Multi-Modal Integration](#aim-4-multi-modal-integration)
+  - [Integration: Multi-Modal Candidate Prioritization](#integration-multi-modal-candidate-prioritization)
 - [Results](#results)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Data Requirements](#data-requirements)
 - [Citation](#citation)
-- [Contributing](#contributing)
 - [Contact](#contact)
 
 ---
@@ -52,321 +53,119 @@ The framework identified **dozens of high-confidence drug candidates** with:
 
 ---
 
-## Repository Structure
-
-```
-drug-repurposing-hnc/
-│
-├── 1. EHR based drug repurposing/           # Aim 1: Clinical outcomes analysis
-│   ├── README.md                            # Detailed documentation
-│   ├── Data_import.py                       # PCDM data loading module
-│   ├── 00 create ICD_RX translation DF.ipynb          # Medical code translation (setup)
-│   ├── 00 Data viewing.ipynb                          # Exploratory data analysis
-│   ├── 00 Identify chemotherapy medications.ipynb     # Treatment identification
-│   ├── 00 Identify surg_rad prevalance.ipynb          # Surgery/radiation identification
-│   ├── 00 non merging input file creation patient level data.ipynb   # Patient outcomes
-│   ├── 00 non merging input file creation modified sum.ipynb         # Feature matrix
-│   ├── 02 data_analysis_ml.ipynb                      # Integrated Cox + ML analysis (MAIN)
-│   ├── 03 top feature correlation check.ipynb         # Validation & integration (MAIN)
-│   ├── input_data/                          # Processed EHR datasets
-│   ├── ICD_RX translation/                  # Medical code dictionaries
-│   └── Results/                             # EHR analysis outputs
-│
-├── 2. Genetic based drug repurposing/       # Aim 2: Genomic alterations analysis
-│   ├── README.md                            # Detailed documentation
-│   ├── 00 Data viewing.ipynb                # TCGA data exploration
-│   ├── 01 determine HPV status.ipynb        # HPV classification (CRITICAL)
-│   ├── 02 CNV identify mutation gene.ipynb  # Copy number variation analysis
-│   ├── 02.2 CNV key mutation identification.ipynb     # CNV filtering & prioritization
-│   ├── 03 SOM identify key mutation gene.ipynb        # Somatic mutation analysis (MAIN)
-│   ├── 04 drug_gene_connection_building.ipynb         # Drug-gene mapping (MAIN)
-│   ├── Data/
-│   │   ├── TCGA/                            # TCGA genomic data
-│   │   ├── DGIDB/                           # Drug-gene interaction database
-│   │   └── Protein-protein interaction data/          # STRING PPI network
-│   └── Results/                             # Genetic analysis outputs
-│
-├── 3. Literature based validation/          # Aim 3: PubMed literature mining
-│   ├── README.md                            # Detailed documentation
-│   ├── 00 extract_pmids.bash                # PubMed article ID retrieval
-│   ├── 01 extract based on pmid.ipynb       # Abstract fetching
-│   ├── 02 GPU_full_extract.py               # LLM target extraction (MAIN - GPU required)
-│   ├── 02 GPU_full_extract.sh               # SLURM cluster submission script
-│   ├── 03 data viewing.ipynb                # Target analysis & validation
-│   ├── Data/
-│   │   ├── head and neck cancer query abstracts.csv  # PubMed abstracts
-│   │   └── extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv   # LLM extractions
-│   └── Results/                             # Literature validation outputs
-│
-├── All aims together/                       # Aim 4: Multi-modal integration
-│   ├── README.md                            # Detailed documentation
-│   ├── 03 Final gene result creation.ipynb  # Genetic results consolidation
-│   ├── 04 validate EHR results direct gene.ipynb      # Direct validation
-│   ├── 05 validate EHR results indirect gene.ipynb    # Indirect PPI-based validation (MAIN)
-│   ├── 06_sankey_diagram_builder simple.ipynb         # Pathway visualization
-│   ├── Data/                                # Shared integration resources
-│   └── Results/                             # Integrated analysis outputs
-│
-└── README.md                                # This file - project overview
-```
-
-**Key Files**:
-- 📘 Each folder contains a detailed README explaining the analysis workflow
-- ⭐ Files marked (MAIN) are the primary analysis notebooks
-- 🔧 Files prefixed with "00" are data preparation/setup (run once)
-- 📊 Results folders contain CSV outputs used in downstream integration
-
----
-
-## 🚀 Getting Started
-
-### Quick Start
-
-**If you just want to explore the results** (no code execution):
-1. Clone this repository
-2. Navigate to each folder's `Results/` directory
-3. Open CSV files with validated drug candidates
-4. See `README.md` files in each folder for result interpretation
-
-**If you want to reproduce the full analysis**:
-See the detailed [Usage](#usage) section below.
-
-### Prerequisites
-
-**System Requirements**:
-- **Operating System**: Linux, macOS, or Windows (Linux/macOS recommended)
-- **Python**: Version 3.9 or higher
-- **R**: Version 4.0+ (optional, for certain visualizations)
-- **RAM**: Minimum 16GB (32GB+ recommended for EHR analysis)
-- **GPU**: NVIDIA GPU with ≥16GB VRAM (required for Aim 3 literature analysis only)
-- **Storage**: ~200GB free space (for TCGA data, PubMed abstracts, and outputs)
-
-**Data Access Requirements**:
-- **Aim 1 (EHR)**: Institutional access to EHR data (TriNetX or equivalent)
-- **Aim 2 (Genetic)**: TCGA data download via GDC Data Portal (public, requires registration)
-- **Aim 3 (Literature)**: PubMed access via NCBI E-utilities (public), Hugging Face account for LLM
-
-### Installation
-
-**Step 1: Clone Repository**
-```bash
-git clone https://github.com/yourusername/drug-repurposing-hnc.git
-cd drug-repurposing-hnc
-```
-
-**Step 2: Create Python Environment**
-
-Option A - Using Conda (Recommended):
-```bash
-conda create -n hnc_repurposing python=3.9
-conda activate hnc_repurposing
-```
-
-Option B - Using venv:
-```bash
-python3 -m venv hnc_env
-source hnc_env/bin/activate  # On Windows: hnc_env\Scripts\activate
-```
-
-**Step 3: Install Dependencies**
-
-For Aim 1 (EHR Analysis):
-```bash
-cd "1. EHR based drug repurposing"
-pip install pandas numpy matplotlib seaborn scipy
-pip install scikit-learn==1.3.0 xgboost==2.0.0
-pip install lifelines statsmodels imbalanced-learn
-pip install shap tqdm jupyter
-```
-
-For Aim 2 (Genetic Analysis):
-```bash
-cd "../2. Genetic based drug repurposing"
-pip install pandas numpy matplotlib seaborn scipy
-pip install networkx lxml xmltodict
-pip install jupyter tqdm
-```
-
-For Aim 3 (Literature Analysis):
-```bash
-cd "../3. Literature based validation"
-pip install pandas numpy matplotlib seaborn
-pip install torch transformers accelerate huggingface_hub
-pip install tqdm jupyter
-
-# For GPU support (Linux/Windows):
-pip install torch --index-url https://download.pytorch.org/whl/cu118
-
-# NCBI E-utilities (for bash script):
-conda install -c bioconda entrez-direct
-```
-
-For Aim 4 (Integration):
-```bash
-cd "../All aims together"
-pip install pandas numpy matplotlib seaborn
-pip install networkx plotly kaleido
-pip install lxml xmltodict jupyter
-```
-
-**Step 4: Download External Data**
-
-TCGA Data (Aim 2):
-```bash
-# Install GDC Data Transfer Tool
-cd "2. Genetic based drug repurposing/Data/TCGA"
-wget https://gdc.cancer.gov/files/public/file/gdc-client_v1.6.1_Ubuntu_x64.zip
-unzip gdc-client_v1.6.1_Ubuntu_x64.zip
-
-# Download TCGA HNSC data (requires GDC manifest file)
-./gdc-client download -m gdc_manifest.txt
-```
-
-DrugBank Database (Aim 2 & 4):
-```bash
-# Register at https://www.drugbank.ca/ for academic license
-# Download XML database and place in:
-# 2. Genetic based drug repurposing/Data/DGIDB/drug_bank.xml
-# All aims together/Data/DGIDB/drug_bank.xml
-```
-
-STRING PPI Database (Aim 2 & 4):
-```bash
-# Download STRING v12.0 human protein interactions
-cd "2. Genetic based drug repurposing/Data/Protein-protein interaction data"
-wget https://stringdb-static.org/download/protein.links.v12.0/9606.protein.links.v12.0.txt.gz
-gunzip 9606.protein.links.v12.0.txt.gz
-```
-
----
-
-## 💻 Usage
-
-### Complete Workflow Execution
-
-**Prerequisites**: Complete [Installation](#installation) steps first.
-
-#### Aim 1: EHR-Based Drug Repurposing (Est. time: 2-3 hours)
-
-```bash
-cd "1. EHR based drug repurposing"
-
-# Phase 0: Data Setup (one-time, ~30 min)
-jupyter notebook "00 create ICD_RX translation DF.ipynb"
-
-# Phase 1: Data Preparation (~1 hour)
-jupyter notebook "00 Data viewing.ipynb"
-jupyter notebook "00 Identify chemotherapy medications.ipynb"
-jupyter notebook "00 Identify surg_rad prevalance.ipynb"
-jupyter notebook "00 non merging input file creation patient level data.ipynb"
-jupyter notebook "00 non merging input file creation modified sum.ipynb"
-
-# Phase 2: Main Analysis (~1 hour)
-jupyter notebook "02 data_analysis_ml.ipynb"
-jupyter notebook "03 top feature correlation check.ipynb"
-```
-
-**Outputs**: `Results/ML analysis/hpv_positive_ml_xgb_results.csv`, `Results/ML analysis/hpv_negative_ml_xgb_results.csv`, `Results/ML analysis/hpv_positive_ml_drug_xgb_results.csv`, `Results/ML analysis/hpv_negative_ml_drug_xgb_results.csv`
-
----
-
-#### Aim 2: Genomics-Based Drug Repurposing (Est. time: 2-3 hours)
-
-```bash
-cd "../2. Genetic based drug repurposing"
-
-# Phase 1: Data Exploration & HPV Classification (~30 min)
-jupyter notebook "00 Data viewing.ipynb"
-jupyter notebook "01 determine HPV status.ipynb"
-
-# Phase 2: Genomic Alteration Analysis (~1 hour)
-jupyter notebook "02 CNV identify mutation gene.ipynb"
-jupyter notebook "02.2 CNV key mutation identification.ipynb"
-jupyter notebook "03 SOM identify key mutation gene.ipynb"  # Most compute-intensive
-
-# Phase 3: Drug-Gene Mapping (~30 min)
-jupyter notebook "04 drug_gene_connection_building.ipynb"
-```
-
-**Outputs**: 
-- `Results/HPV positive direct gene results.csv`
-- `Results/HPV negative direct gene results.csv`
-- `Results/hpv_pos_som_top_drugBank_drug_candidates.csv`
-- `Results/hpv_neg_som_top_drugBank_drug_candidates.csv`
-
----
-
-#### Aim 3: Literature-Based Validation (Est. time: 100-400 hours)
-
-**Note**: This step requires GPU resources and is very time-consuming.
-
-```bash
-cd "../3. Literature based validation"
-
-# Phase 1: Literature Retrieval (~3 hours)
-bash 00_extract_pmids.bash
-jupyter notebook "01 extract based on pmid.ipynb"
-
-# Phase 2: LLM Extraction (⚠️ GPU required, ~200-400 hours)
-# Option A: Single GPU
-python 02_GPU_full_extract.py
-
-# Option B: Cluster submission
-sbatch 02_GPU_full_extract.sh
-
-# Phase 3: Analysis (~30 min)
-jupyter notebook "03 data viewing.ipynb"
-```
-
-**Outputs**: `Data/extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv`
-
-**Alternative**: Pre-computed literature extractions available upon request (contact authors).
-
----
-
-#### Aim 4: Multi-Modal Integration (Est. time: 1-1.5 hours)
-
-```bash
-cd "../All aims together"
-
-# Phase 1: Genetic Consolidation (~10 min)
-jupyter notebook "03 Final gene result creation.ipynb"
-
-# Phase 2: EHR-Genetic Validation (~40 min)
-jupyter notebook "04 validate EHR results direct gene.ipynb"
-jupyter notebook "05 validate EHR results indirect gene.ipynb"
-
-# Phase 3: Visualization (~20 min)
-jupyter notebook "06_sankey_diagram_builder simple.ipynb"
-```
-
-**Outputs**:
-- `Results/HPV positive EHR drug candidates validated indirect.csv`
-- `Results/HPV negative EHR drug candidates validated indirect.csv`
-- Interactive Sankey diagrams displayed in-notebook (no HTML files saved)
-
----
-
-## 🏆 Key Findings
+## Key Findings
 
 ### HPV-Positive HNC
-- **52.2% validation rate** for genomically-prioritized drugs in literature
-- Identified **protective medications** associated with reduced metastasis risk (HR < 1)
-- Key pathways: Immune modulation, viral response, cell cycle regulation
+- **3 validated drug candidates** with complete evidence pathways (EHR + Genomics + Literature + PPI)
+- **LEVOTHYROXINE** (highest XGB importance: 0.0441) targets PIK3CA pathway (17 literature PMIDs)
+- **HEPARIN** targets multiple FGFRs → PIK3CA convergence
+- **DEXAMETHASONE** targets SOX2 stem cell pathway
+- Key pathways: PI3K/AKT signaling, stem cell regulation, growth factor signaling
 
 ### HPV-Negative HNC  
-- **69.4% validation rate** for genomically-prioritized drugs in literature
-- Distinct drug-gene signatures reflecting different biology
-- Key pathways: DNA repair, oxidative stress, epithelial-mesenchymal transition
+- **5 validated drug candidates** with complete evidence pathways
+- **MELATONIN**  shows multi-target effects 
+- **LEVOTHYROXINE** validated in both cohorts (cross-cohort consistency)
+- **METHYLPREDNISOLONE** shows strongest protective effect 
+- **Aspirin** and **Acetaminophen** 
+- key pathways related to TP53
 
 ### Cross-Modal Convergence
-- **High-confidence candidates** validated across EHR, genomics, AND literature
-- Sankey diagrams visualize evidence flow through the multi-modal pipeline
-- Prioritization framework ranks candidates by strength of evidence
+- **LEVOTHYROXINE**: Only drug validated in both HPV+ and HPV- cohorts
+- **PIK3CA**: Central hub in HPV+ (4/4 drugs converge)
+- **BCL6**: Central hub in HPV- (4/5 drugs converge)  
+- **Sankey diagrams** visualize drug → target → mutation evidence flows
+- **Detailed candidate profiles**: See [QUICK_REFERENCE_DRUG_CANDIDATES.md](All%20aims%20together/QUICK_REFERENCE_DRUG_CANDIDATES.md)
 
 ---
 
-## 🔬 Methodology
+## Data Requirements & Acquisition
+
+### Required Data Sources
+
+**Note: Large input data files and intermediate results have been removed from this repository to reduce size. You will need to obtain the following data sources to run the complete pipeline:**
+
+#### 1. Electronic Health Records (EHR) Data
+- **Source**: TriNetX Research Network (requires institutional access)
+- **Access**: Contact your institution's TriNetX administrator or visit [https://trinetx.com/](https://trinetx.com/)
+- **Required Files**: De-identified patient records including:
+  - Diagnosis codes (ICD-9/ICD-10)
+  - Medication prescriptions (RxNorm/NDC codes)
+  - Procedures (CPT/HCPCS codes)
+  - Demographics and survival outcomes
+- **Data Format**: CSV exports from TriNetX platform
+- **Destination**: Place raw EHR data in `1. EHR based drug repurposing/input_data/`
+
+#### 2. TCGA Genomic Data
+- **Source**: [GDC Data Portal](https://portal.gdc.cancer.gov/)
+- **Project**: TCGA-HNSC (Head and Neck Squamous Cell Carcinoma)
+- **Required Files**:
+  - Copy Number Variation (CNV): GISTIC2.0 gene-level data
+  - Somatic Mutations: MAF (Mutation Annotation Format) files
+  - Clinical data: Patient annotations, survival, HPV status
+- **Download Tool**: Use GDC Data Transfer Tool (gdc-client) provided in `2. Genetic based drug repurposing/Data/`
+- **Destination**: Place TCGA files in `2. Genetic based drug repurposing/Data/TCGA/`
+
+#### 3. DrugBank Database
+- **Source**: [DrugBank](https://www.drugbank.ca/)
+- **Access**: Academic license required (free for academic use)
+- **Required File**: DrugBank XML (full database)
+- **Destination**: Place `drug_bank.xml` in multiple locations:
+  - `2. Genetic based drug repurposing/Data/DGIDB/`
+  - `3. Literature based validation/Data/DRUGBANK/`
+  - `All aims together/Data/DGIDB/`
+
+#### 4. STRING Protein-Protein Interaction Database
+- **Source**: [STRING Database](https://string-db.org/cgi/download)
+- **Required File**: Human protein links (Homo sapiens)
+- **Version**: v12.0 or later
+- **Destination**: Place PPI files in multiple locations:
+  - `2. Genetic based drug repurposing/Data/Protein-protein interaction data/`
+  - `3. Literature based validation/Data/Protein-protein interaction data/`
+  - `All aims together/Data/Protein-protein interaction data/`
+
+#### 5. PubMed Literature Data
+- **Source**: [NCBI PubMed](https://pubmed.ncbi.nlm.nih.gov/)
+- **Access**: Free via E-utilities API
+- **Query**: "head and neck cancer" (years 2000-present)
+- **Note**: Abstracts will be downloaded automatically by running the extraction scripts
+- **Destination**: `3. Literature based validation/Data/`
+
+### Expected Output Structure
+
+When you run the complete pipeline, the following output directories will be populated:
+
+```
+1. EHR based drug repurposing/Results/ML analysis/
+  ├── hpv_positive_ml_xgb_results.csv
+  ├── hpv_negative_ml_xgb_results.csv
+  ├── hpv_positive_ml_drug_xgb_results.csv
+  ├── hpv_negative_ml_drug_xgb_results.csv
+  └── ml_feature_stability_*.csv
+
+2. Genetic based drug repurposing/Results/
+  ├── CNV results/
+  ├── SOM results/
+  ├── HPV results/
+  ├── Final Results/
+  └── Integrated results/
+
+3. Literature based validation/Results/
+  ├── cleaned_extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv
+  └── cleaned_extracted_combined_targets_all_pub_after_2000_GPU_2b_gemma.csv
+
+All aims together/Results/
+  ├── HPV positive EHR drug candidates validated indirect.csv
+  ├── HPV negative EHR drug candidates validated indirect.csv
+  ├── HPV Positive validated genes.csv
+  ├── HPV Negative validated genes.csv
+  ├── HPV positive Sankey.png
+  └── HPV negative Sankey.png
+```
+
+---
+
+## Methodology
 
 ### Aim 1: EHR-Based Drug Repurposing
 
@@ -460,7 +259,7 @@ For each drug candidate:
 ```
 TCGA HNC Data
     ↓
-HPV Stratification (p16/HPV PCR)
+HPV Stratification (Nulton et al. reference cohort, n=75 HPV+)
     ↓
 Copy Number Analysis
     ├── Amplification Detection (GISTIC2.0 format)
@@ -670,13 +469,13 @@ Where each component is normalized to [0, 1].
 #### High-Confidence Criteria
 
 **Tier 1 (Immediate Clinical Translation)**:
-- ✅ Protective in EHR (multivariate HR < 1, p < 0.05)
-- ✅ Targets ≥2 genomically significant genes
-- ✅ ≥3 literature publications with clinical evidence
+-  Protective in EHR (multivariate HR < 1, p < 0.05)
+-  Targets ≥2 genomically significant genes
+-  ≥3 literature publications with clinical evidence
 
 **Tier 2 (Preclinical Validation Recommended)**:
-- ✅ Protective in EHR OR significant in genomics
-- ✅ AND moderate literature support (≥2 publications)
+-  Protective in EHR OR significant in genomics
+-  AND moderate literature support (≥2 publications)
 
 **Tier 3 (Hypothesis-Generating)**:
 - Evidence in 1-2 modalities
@@ -697,7 +496,7 @@ This visualization immediately identifies:
 
 ---
 
-## 📊 Results
+## Results
 
 ### Summary Statistics
 
@@ -707,10 +506,11 @@ This visualization immediately identifies:
 | **Features After Selection** | 184 | 267 |
 | **XGBoost ROC AUC** | 0.847 ± 0.023 | 0.821 ± 0.031 |
 | **Random Forest ROC AUC** | 0.839 ± 0.028 | 0.809 ± 0.035 |
-| **Significant CNV Genes** | 447 | 930 |
-| **Drug-Gene Mappings** | 2,341 | 3,872 |
-| **Literature Validation Rate** | 52.2% | 69.4% |
-| **High-Confidence Candidates** | 23 | 31 |
+| **Validated Genes (Literature + TCGA)** | 5 genes | 20+ genes |
+| **EHR-Validated Drug Candidates** | 3 drugs | 5 drugs (4 unique) |
+| **Total Drug-Gene-Risk Connections** | 6 pathways | 9 pathways |
+| **Literature PMIDs** | 6,078 genes | 6,078 genes |
+| **Cross-Cohort Validated Drug** | 1 (Levothyroxine) | 1 (Levothyroxine) |
 
 ### Model Performance
 
@@ -727,48 +527,61 @@ This visualization immediately identifies:
 ### Biological Insights
 
 #### HPV-Positive HNC
-**Top Pathways** (Enrichment Analysis):
-1. Antiviral response regulation
-2. Immune checkpoint modulation  
-3. Cell cycle control (E6/E7 interaction)
-4. Apoptosis regulation
+**Top Pathways** (Validated):
+1. PI3K/AKT/mTOR signaling (PIK3CA: 4/4 drugs converge)
+2. Growth factor signaling (FGFR family)
+3. Stem cell transcription (SOX2)
+4. Thyroid hormone signaling (THRB)
 
-**Example High-Confidence Candidate**:
-- **Drug**: Metformin
-- **EHR Evidence**: HR = 0.68 (95% CI: 0.52-0.89), FDR p = 0.003
-- **Genomic Targets**: AMPK pathway genes, mTOR regulators (4 significant genes)
-- **Literature**: 12 publications, including 2 clinical trials in HNC
-- **Mechanism**: AMPK activation → mTOR inhibition → reduced proliferation
+**Top Validated Candidate**:
+- **Drug**: LEVOTHYROXINE
+- **EHR Evidence**: XGB importance = 0.0441 (highest)
+- **Genomic Target**: THRB → PIK3CA (PPI confidence 750)
+- **Mutation**: PIK3CA amplification + somatic (q=4.9×10⁻⁵⁴)
+- **Literature**: 17 publications supporting PIK3CA in HNC
+- **Mechanism**: Thyroid hormone receptor → PI3K pathway modulation
 
 #### HPV-Negative HNC
-**Top Pathways**:
-1. DNA damage response
-2. Oxidative stress management
-3. Epithelial-mesenchymal transition (EMT)
-4. EGFR/PI3K/AKT signaling
+**Top Pathways** (Validated):
+1. BCL6 transcriptional regulation (4/5 drugs converge)
+2. PI3K/AKT signaling (MELATONIN, LEVOTHYROXINE)
+3. COX-2/inflammation (ACETAMINOPHEN, ASPIRIN)
+4. Extracellular matrix remodeling (COL1A2)
 
-**Example High-Confidence Candidate**:
-- **Drug**: Aspirin (NSAIDs)
-- **EHR Evidence**: HR = 0.61 (95% CI: 0.46-0.81), FDR p < 0.001
-- **Genomic Targets**: COX2, inflammation pathways (6 significant genes)
-- **Literature**: 18 publications, including 3 epidemiological studies
-- **Mechanism**: COX2 inhibition → reduced inflammation → decreased metastasis
+**Top Validated Candidate**:
+- **Drug**: MELATONIN  
+- **EHR Evidence**: XGB importance = 0.0106 (highest)
+- **Genomic Targets**: ESR1 → BCL6, DVL3, RFC4 (multi-target)
+- **Mutations**: BCL6 (q<0.05, 4 PMIDs), DVL3 (2 PMIDs), RFC4 (1 PMID)
+- **Literature**: Total 7 publications across 3 targets
+- **Mechanism**: Hormone signaling + antioxidant effects → multiple pathway modulation
+
+**Strongest Clinical Effect**:
+- **Drug**: METHYLPREDNISOLONE
+- **EHR Evidence**: 15.6% → 8.0% metastasis risk reduction (strongest protective effect)
+- **Mechanism**: ANXA1 → BCL6/REG1A anti-inflammatory pathways
 
 ### Cross-Modal Validation
 
-**Convergence Analysis**:
-- Drugs validated in **all 3 modalities**: 15 (HPV+), 22 (HPV-)
-- Drugs validated in **2 modalities**: 38 (HPV+), 47 (HPV-)
-- Drugs with **genomic + literature** support (no EHR): 127 (HPV+), 213 (HPV-)
+**Validated Drug Candidates (Complete Evidence Pathway)**:
+- **HPV-Positive**: 3 drugs (LEVOTHYROXINE, HEPARIN, DEXAMETHASONE)
+- **HPV-Negative**: 5 drugs (MELATONIN, LEVOTHYROXINE, ACETAMINOPHEN, METHYLPREDNISOLONE, ASPIRIN)
+- **Cross-Cohort**: 1 drug validated in both (LEVOTHYROXINE)
 
-**Publication Impact**:
-- High-confidence candidates have **publication-ready evidence packages**
-- Sankey visualizations provide compelling visual narratives
-- Ready for grant applications and clinical trial design
+**Evidence Strength**:
+- All candidates have: EHR ML importance + TCGA mutation (q<0.05) + PPI network (≥700) + Literature PMIDs
+- **PIK3CA convergence** (HPV+): 4/4 drugs target this amplified oncogene (17 PMIDs)
+- **BCL6 convergence** (HPV-): 4/5 drugs target this transcriptional regulator (4 PMIDs)
+
+**Publication-Ready Outputs**:
+- **Sankey diagrams**: Interactive visualizations of drug → target → mutation flows
+- **Comprehensive documentation**: See [All aims together/README.md](All%20aims%20together/README.md)
+- **Detailed pathway analysis**: Results CSVs with PMIDs, q-values, PPI scores
+- Ready for grant applications, clinical trial design, and manuscript preparation
 
 ---
 
-## 🛠️ Installation
+## Installation
 
 ### Prerequisites
 
@@ -792,6 +605,18 @@ cd drug-repurposing-hnc
 pip install -r requirements.txt
 ```
 
+### IMPORTANT: Data Acquisition Required
+
+**Before running any analysis, you MUST obtain the required data sources.** All large input data files and intermediate results have been removed from this repository. See the [Data Requirements & Acquisition](#-data-requirements--acquisition) section above for detailed instructions on:
+
+1. **EHR Data**: TriNetX institutional access required
+2. **TCGA Genomic Data**: Download from GDC Data Portal (free)
+3. **DrugBank**: Academic license required (free for academics)
+4. **STRING PPI Database**: Public download (free)
+5. **PubMed Abstracts**: Automatic download via scripts (free)
+
+**Quick Reference**: See [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) for step-by-step data acquisition instructions.
+
 ### Key Dependencies
 
 - **Data Processing**: `pandas`, `numpy`, `scipy`
@@ -804,11 +629,24 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Usage
+## Usage
+
+### Prerequisites
+
+**BEFORE running any notebooks**, ensure you have:
+1. Installed all Python dependencies (see Installation section above)
+2. Downloaded all required data sources (see [Data Requirements & Acquisition](#data-requirements--acquisition) section)
+3. Placed data files in the correct directories as specified
+
+**Without the required data files, the notebooks will fail to run.** See [QUICK_START_GUIDE.md](QUICK_START_GUIDE.md) for detailed setup instructions.
+
+---
 
 ### Quick Start
 
 #### 1. EHR Analysis (Aim 1)
+
+**Required Files**: Place EHR data in `1. EHR based drug repurposing/input_data/` (see module README for details)
 
 ```bash
 cd "1. EHR based drug repurposing"
@@ -820,12 +658,14 @@ jupyter notebook "02 data_analysis_ml.ipynb"
 - `output_table_xgboost_based_log_odds_with_rf()`: Full ML pipeline with SHAP and survival analysis
 - `plot_cox_univ_multiv()`: Forest plots for hazard ratios
 
-**Outputs**:
-- `Results/ML analysis/hpv_positive_ml_xgb_results.csv`
-- `Results/ML analysis/hpv_negative_ml_xgb_results.csv`
-- `Results/ML analysis/ml_feature_stability_*.csv`
+**Outputs** (generated in `Results/ML analysis/`):
+- `hpv_positive_ml_xgb_results.csv`
+- `hpv_negative_ml_xgb_results.csv`
+- `ml_feature_stability_*.csv`
 
 #### 2. Genomic Analysis (Aim 2)
+
+**Required Files**: Place TCGA data in `2. Genetic based drug repurposing/Data/TCGA/` (see module README for details)
 
 ```bash
 cd "2. Genetic based drug repurposing"
@@ -839,20 +679,26 @@ jupyter notebook "04 drug_gene_connection_building.ipynb"
 - `identify_som_genes()`: Somatic mutation significance testing
 - `map_drugs_to_genes()`: Drug-gene interaction mapping via DGIdb/DrugBank
 
-**Outputs**:
-- `Results/CNV results/HPV positive amplification top genes.csv`
-- `Results/CNV results/HPV negative amplification top genes.csv`
-- `Results/SOM results/HPV positive top genes.csv`
-- `Results/SOM results/HPV negative top genes.csv`
-- `Results/HPV positive direct gene results.csv`
-- `Results/HPV negative direct gene results.csv`
-- `Results/hpv_pos_som_top_drugBank_drug_candidates.csv`
-- `Results/hpv_neg_som_top_drugBank_drug_candidates.csv`
+**Outputs** (generated in `Results/`):
+- `CNV_significant_genes_hpv_positive.csv`
+- `SOM_significant_genes_hpv_negative.csv`
+- `drug_gene_mappings_*.csv`
 
 #### 3. Literature Validation (Aim 3)
 
+**Required Files**: PubMed abstracts will be downloaded automatically; DrugBank XML required (see module README)
+
 ```bash
 cd "3. Literature based validation"
+
+# Download PubMed abstracts (automatic)
+bash 00 extract_pmids.bash
+
+# Run LLM extraction
+jupyter notebook "01 extract based on pmid.ipynb"
+python 02 GPU_full_extract.py  # Requires GPU
+
+# View and clean results
 jupyter notebook "03 data viewing.ipynb"
 ```
 
@@ -861,30 +707,40 @@ jupyter notebook "03 data viewing.ipynb"
 - `extract_with_llm()`: LLM-based information extraction
 - `calculate_validation_rate()`: Compute literature support metrics
 
-**Outputs**:
-- `Results/cleaned_extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv`
-- `Results/cleaned_extracted_combined_targets_all_pub_after_2000_GPU_2b_gemma.csv`
+**Outputs** (generated in `Results/`):
+- `extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv`
+- `cleaned_extracted_targets_all_pub_after_2000_GPU_2b_gemma.csv`
 
 #### 4. Multi-Modal Integration
 
+**Required Files**: Must complete Aims 1-3 first; results from all previous modules required
+
 ```bash
 cd "All aims together"
+jupyter notebook "03 Final gene result creation.ipynb"
+jupyter notebook "04 validate EHR results direct gene.ipynb"  
+jupyter notebook "05 validate EHR results indirect gene.ipynb"
 jupyter notebook "06_sankey_diagram_builder simple.ipynb"
 ```
 
 **Key Functions**:
-- `create_sankey_data()`: Prepare data for evidence flow visualization
-- `calculate_priority_scores()`: Multi-modal prioritization
-- `generate_final_candidate_list()`: Export high-confidence candidates
+- **03**: `consolidate_genes()` - Combine CNV and SOM results across cohorts
+- **04**: `validate_direct_targeting()` - Test if EHR drugs directly target mutated genes
+- **05**: `validate_indirect_pathways()` - PPI network-based indirect validation
+- **06**: `create_sankey_diagrams()` - Visualize drug → target → mutation evidence flows
 
-**Outputs**:
-- `Results/HPV positive EHR drug candidates validated indirect.csv`
-- `Results/HPV negative EHR drug candidates validated indirect.csv`
-- Interactive Sankey diagrams displayed in-notebook (no HTML files saved)
+**Key Finding**: Direct validation yielded 0% success (no drugs target mutations directly). Indirect validation via PPI networks achieved 100% success with 3 drugs (HPV+) and 5 drugs (HPV-) validated.
+
+**Outputs** (generated in `Results/`):
+- `HPV positive EHR drug candidates validated indirect.csv` (3 drugs, 6 pathways)
+- `HPV negative EHR drug candidates validated indirect.csv` (5 drugs, 9 pathways)
+- `HPV positive Sankey.png` (visualization)
+- `HPV negative Sankey.png` (visualization)
+- See [All aims together/README.md](All%20aims%20together/README.md) for comprehensive analysis
 
 ---
 
-## 📁 Data Requirements
+## Data Requirements
 
 ### Input Data Structure
 
@@ -929,7 +785,7 @@ Preprocessing scripts included:
 
 ---
 
-## 📈 Reproducibility
+## Reproducibility
 
 ### Random Seeds
 All random processes use `random_state=42` for reproducibility:
@@ -966,18 +822,10 @@ pip freeze > requirements.txt
 
 ---
 
-## 📝 Citation
+## Citation
 
 If you use this code or methodology, please cite:
 
-```bibtex
-@phdthesis{yourname2026,
-  title={Multi-Modal Computational Drug Repurposing for Head and Neck Cancer: Integration of Electronic Health Records, Genomics, and Literature Mining},
-  author={Your Name},
-  year={2026},
-  school={Your University},
-  type={PhD Dissertation}
-}
 ```
 
 ### Related Publications
@@ -987,7 +835,7 @@ If you use this code or methodology, please cite:
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 This repository represents completed dissertation research. For questions or collaboration inquiries, please contact the authors.
 
@@ -1002,7 +850,7 @@ Potential extensions of this work:
 
 ---
 
-## 📧 Contact
+## Contact
 
 **Author**: [Your Name]  
 **Email**: your.email@institution.edu  
@@ -1015,7 +863,7 @@ Potential extensions of this work:
 
 ---
 
-## 📜 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -1030,7 +878,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🔖 Appendix
+## Appendix
 
 ### File Structure
 
@@ -1091,74 +939,7 @@ drug-repurposing-hnc/
     └── TABLE_VERIFICATION_COMPLETE.md
 ```
 
----
-
-## 🤝 Contributing
-
-We welcome contributions from the research community! If you'd like to contribute:
-
-1. **Fork the repository**
-2. **Create a feature branch** (`git checkout -b feature/improvement`)
-3. **Make your changes** with clear documentation
-4. **Add tests** if applicable
-5. **Submit a pull request** with detailed description
-
-**Types of Contributions Welcome**:
-- Bug fixes and code improvements
-- Additional validation analyses
-- Integration with other databases
-- Performance optimizations
-- Documentation improvements
-- New visualization methods
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-**Citation Requirement**: If you use this code or data in your research, please cite our paper (see Citation section below).
-
----
-
-## 📚 Citation
-
-If you use this work in your research, please cite:
-
-```bibtex
-@article{pradham2026multimodal,
-  title={Multi-Modal Drug Repurposing for Head and Neck Cancer: Integrating Electronic Health Records, Genomics, and Literature Mining},
-  author={Pradham, [First Name] and [Co-authors]},
-  journal={[Journal Name]},
-  year={2026},
-  doi={[DOI when available]}
-}
-```
-
----
-
-## 📧 Contact
-
-**Primary Investigator**: [Your Name]  
-**Email**: [your.email@institution.edu]  
-**Institution**: [Your Institution]  
-**Lab**: Wu Lab
-
-**For Questions**:
-- **Technical Issues**: Open a GitHub issue  
-- **Data Access/Collaboration**: Email primary investigator
-
----
-
-## 🙏 Acknowledgments
-
-**Data Sources**: TCGA Research Network, TriNetX Health Research Network, PubMed/NLM, DrugBank, STRING Database
-
-**Funding**: [Grant Information]
-
----
-
-## Glossary
+### Glossary
 
 - **CNV**: Copy Number Variation - genomic regions with abnormal copy number (amplifications/deletions)
 - **FDR**: False Discovery Rate - proportion of false positives among rejected hypotheses
@@ -1171,6 +952,6 @@ If you use this work in your research, please cite:
 
 ---
 
-**Last Updated**: March 21, 2026  
+**Last Updated**: April 2, 2026  
 **Version**: 1.0.0  
-**Status**: ✅ Dissertation Complete | 🔬 Manuscript in Preparation
+**Status**: Dissertation Complete | Manuscript in Preparation
