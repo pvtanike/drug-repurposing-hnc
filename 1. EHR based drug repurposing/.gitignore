@@ -1,0 +1,27 @@
+# Protected Health Information (PHI) - DO NOT COMMIT
+# These folders contain sensitive patient data and must be generated locally
+
+# Input data files (contain PHI)
+input_data/
+*.csv
+
+# Medical code translation files (may contain PHI)
+ICD_RX translation/
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+
+# Backup files
+*~
+*.bak
+*.swp

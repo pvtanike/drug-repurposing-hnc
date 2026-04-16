@@ -1,0 +1,36 @@
+# TCGA Genomic Data (Controlled Access) - DO NOT COMMIT
+# These folders contain genomic data that must be downloaded separately from GDC
+
+# TCGA data files (NOT included in repository)
+Data/TCGA/Gene level CNV/*.txt
+Data/TCGA/Gene level CNV/*.tsv
+Data/TCGA/Gene level CNV/*.csv
+Data/TCGA/SOM/*.maf
+Data/TCGA/SOM/*.txt
+Data/TCGA/SOM/*.tsv
+Data/TCGA/Clinical data/*.txt
+Data/TCGA/Clinical data/*.tsv
+Data/TCGA/Clinical data/*.csv
+Data/Supplementary data Nulton/*.csv
+Data/Supplementary data Nulton/*.txt
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# macOS
+.DS_Store
+
+# Backup files
+*~
+*.bak
+*.swp
+
+# Large result files (optional - comment out if you want to include in repo)
+# Results/**/*.csv

@@ -1,0 +1,30 @@
+# Literature-Based Drug Validation
+# Requirements for PubMed abstract mining with LLM
+
+# Core Data Science
+pandas>=1.5.3
+numpy>=1.23.5
+
+# Deep Learning & NLP
+torch>=2.0.0
+transformers>=4.30.0
+huggingface-hub>=0.16.0
+
+# API & Data Retrieval
+requests>=2.31.0
+
+# Utilities
+tqdm>=4.65.0
+
+# IMPORTANT: GPU Support
+# This analysis requires GPU for efficient LLM inference
+# Install PyTorch with CUDA support:
+# pip install torch --index-url https://download.pytorch.org/whl/cu118
+#
+# For Apple Silicon (M1/M2/M3), use MPS backend (included in torch>=2.0.0)
+
+# Gemma Model Access
+# Requires Hugging Face account and model access approval:
+# 1. Create account at https://huggingface.co
+# 2. Request access to google/gemma-2b-it or google/gemma-7b-it
+# 3. Set HF_TOKEN environment variable with your access token

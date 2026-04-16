@@ -1,0 +1,21 @@
+# Genetic-Based Drug Repurposing Analysis
+# Requirements for TCGA genomic data analysis
+
+# Core Data Science
+pandas>=1.5.3
+numpy>=1.23.5
+scipy>=1.10.1
+
+# Visualization
+matplotlib>=3.7.1
+seaborn>=0.12.2
+
+# Utilities
+tqdm>=4.65.0
+
+# Genomic Data Analysis
+# Note: NetworkX may be needed for protein-protein interaction analysis
+# networkx>=2.8.0
+
+# Optional: For specific analyses
+# jupyter>=1.0.0  # If running notebooks interactively

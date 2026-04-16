@@ -1,0 +1,21 @@
+# Multi-Modal Integration Analysis
+# Requirements for integrating EHR, genetic, and literature results
+
+# Core Data Science
+pandas>=1.5.3
+numpy>=1.23.5
+scipy>=1.10.1
+
+# Visualization
+matplotlib>=3.7.1
+seaborn>=0.12.2
+
+# Network Analysis (for protein-protein interactions)
+# networkx>=2.8.0
+
+# Utilities
+tqdm>=4.65.0
+
+# Optional: For specific visualizations
+# plotly>=5.14.0  # If interactive plots needed
+# jupyter>=1.0.0  # If running notebooks interactively

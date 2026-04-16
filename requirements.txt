@@ -1,0 +1,33 @@
+# Multi-Modal Drug Repurposing for Head and Neck Cancer
+# Main Requirements File
+
+# Core Data Science Libraries
+pandas>=1.5.3
+numpy>=1.23.5
+scipy>=1.10.1
+
+# Machine Learning
+scikit-learn>=1.3.0
+xgboost>=2.0.0
+imbalanced-learn>=0.11.0
+
+# Survival Analysis
+lifelines>=0.27.7
+statsmodels>=0.14.0
+
+# Deep Learning (for Literature Mining)
+torch>=2.0.0
+transformers>=4.30.0
+huggingface-hub>=0.16.0
+
+# Visualization
+matplotlib>=3.7.1
+seaborn>=0.12.2
+
+# Utilities
+tqdm>=4.65.0
+requests>=2.31.0
+
+# Note: Some analyses require GPU support for PyTorch
+# Install PyTorch with CUDA support if GPU is available:
+# pip install torch --index-url https://download.pytorch.org/whl/cu118
